@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Planilha Inteligente</title>
+
+  <!-- SEO -->
+  <meta property="og:title" content="Planilha Inteligente" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:url" content="https://craiba76.github.io/PLANILHA-INTELIGENT/" />
+  <meta property="og:site_name" content="Planilha Inteligente" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:title" content="Planilha Inteligente" />
+  <link rel="canonical" href="https://craiba76.github.io/PLANILHA-INTELIGENT/" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "headline": "Planilha Inteligente",
+    "name": "Planilha Inteligente",
+    "url": "https://craiba76.github.io/PLANILHA-INTELIGENT/"
+  }
+  </script>
+
+  <!-- Estilos -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 40px;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #004080;
+      margin-bottom: 20px;
+    }
+    .login-container, .table-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .login-container input, .table-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .login-btn, .add-row-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #004080;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .login-btn:hover, .add-row-btn:hover {
+      background-color: #003060;
+    }
+    .error-msg {
+      color: red;
+      text-align: center;
+    }
+    .welcome-msg {
+      text-align: center;
+      font-size: 20px;
+      color: #004080;
+      margin-top: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background-color: #004080;
+      color: white;
+    }
+    td input {
+      text-align: right;
+    }
+    tfoot td {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    .ia-msg {
+      font-size: 12px;
+      color: #006400;
+      text-align: center;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Tela de Login -->
+  <div class="login-container" id="loginForm">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Usuário">
+    <input type="password" id="password" placeholder="Senha">
+    <button class="login-btn" onclick="login()">Entrar</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <!-- Boas-Vindas -->
+  <div class="welcome-msg" id="welcomeContainer" style="display: none;">
+    Seja Bem-Vindo à Planilha Inteligente com IA em 5D!
+  </div>
+
+  <!-- Planilha Inteligente -->
+  <div class="table-container" id="tableContainer" style="display: none;">
+    <h1>Planilha Inteligente de Precificação com IA</h1>
+    <table id="priceTable">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Preço de Compra (R$)</th>
+          <th>Imposto (%)</th>
+          <th>Frete (R$)</th>
+          <th>Preço de Venda (R$)</th>
+          <th>Data da Compra</th>
+          <th>Valor Total (R$)</th>
+          <th>Lucro (R$)</th>
+          <th>IA Sugestão</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" placeholder="Nome do Produto"></td>
+          <td><input type="number" step="0.01" class="preco-compra"></td>
+          <td><input type="number" step="0.01" class="imposto"></td>
+          <td><input type="number" step="0.01" class="frete"></td>
+          <td><input type="number" step="0.01" class="preco-venda"></td>
+          <td><input type="date"></td>
+          <td><input type="text" class="valor-total" readonly></td>
+          <td><input type="text" class="lucro" readonly></td>
+          <td><div class="ia-msg"></div></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="add-row-btn" onclick="adicionarLinha()">Adicionar Produto</button>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (username === "admin" && password === "1005") {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('welcomeContainer').style.display = 'block';
+        document.getElementById('tableContainer').style.display = 'block';
+      } else {
+        errorMsg.textContent = 'Credenciais inválidas. Tente novamente.';
+      }
+    }
+
+    function calcularValorTotal(row) {
+      const precoCompra = parseFloat(row.querySelector('.preco-compra').value) || 0;
+      const imposto = parseFloat(row.querySelector('.imposto').value) || 0;
+      const frete = parseFloat(row.querySelector('.frete').value) || 0;
+      const precoVenda = parseFloat(row.querySelector('.preco-venda').value) || 0;
+
+      const total = precoCompra + frete + (precoCompra * (imposto / 100));
+      const lucro = precoVenda - total;
+
+      row.querySelector('.valor-total').value = total.toFixed(2);
+      row.querySelector('.lucro').value = lucro.toFixed(2);
+
+      const iaMsg = row.querySelector('.ia-msg');
+      if (lucro < 0) {
+        iaMsg.innerText = "⚠️ Alerta: Prejuízo! Reavalie o preço de venda.";
+        iaMsg.style.color = '#b00020';
+      } else if (lucro < total * 0.1) {
+        iaMsg.innerText = "💡 Dica IA: Margem baixa, tente aumentar o preço.";
+        iaMsg.style.color = '#ff8c00';
+      } else {
+        iaMsg.innerText = "✅ Margem saudável.";
+        iaMsg.style.color = '#006400';
+      }
+    }
+
+    function aplicarEventos(row) {
+      row.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => calcularValorTotal(row));
+      });
+    }
+
+    document.querySelectorAll('tbody tr').forEach(row => aplicarEventos(row));
+
+    function adicionarLinha() {
+      const tbody = document.querySelector('#priceTable tbody');
+      const novaLinha = document.createElement('tr');
+      novaLinha.innerHTML = `
+        <td><input type="text" placeholder="Nome do Produto"></td>
+        <td><input type="number" step="0.01" class="preco-compra"></td>
+        <td><input type="number" step="0.01" class="imposto"></td>
+        <td><input type="number" step="0.01" class="frete"></td>
+        <td><input type="number" step="0.01" class="preco-venda"></td>
+        <td><input type="date"></td>
+        <td><input type="text" class="valor-total" readonly></td>
+        <td><input type="text" class="lucro" readonly></td>
+        <td><div class="ia-msg"></div></td>
+      `;
+      aplicarEventos(novaLinha);
+      tbody.appendChild(novaLinha);
+    }
+  </script>
+
+</body>
+</html>
